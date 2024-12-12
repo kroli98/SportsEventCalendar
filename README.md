@@ -4,6 +4,8 @@
 
 A sports event calendar web application built with ASP.NET Core 8 and Angular 16.1.8. The application displays sports events with filtering capabilities and detailed event information. The data is stored in a SQL Server database.
 
+> **Note:** This project was created as part of a job application process. Due to the company's request, I had to remove the commits from the repository because they contained company-specific information.
+
 ## Setup Instructions
 
 ### Requirements
