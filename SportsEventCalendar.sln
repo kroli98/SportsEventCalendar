@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "sportseventcalendar.client", "sportseventcalendar.client\sportseventcalendar.client.esproj", "{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SportsEventCalendar.Server", "SportsEventCalendar.Server\SportsEventCalendar.Server.csproj", "{EC328E3A-E769-4718-9F78-1D42390697D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8A6BCD7-D14D-45AC-AD93-B412E4E4601D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EC328E3A-E769-4718-9F78-1D42390697D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC328E3A-E769-4718-9F78-1D42390697D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC328E3A-E769-4718-9F78-1D42390697D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC328E3A-E769-4718-9F78-1D42390697D2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EC25C88F-5F75-47BE-9FA5-D24E303CFFBF}
+	EndGlobalSection
+EndGlobal

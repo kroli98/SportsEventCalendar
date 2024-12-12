@@ -1,0 +1,236 @@
+<!-- event-list.component.html -->
+<div class="container mt-4 mb-4">
+    <h1 class="h3 mb-4">Sports Events</h1>
+
+    <!-- Filters -->
+    <div class="row mb-4" *ngIf="!loading && !error">
+        <!-- Sport Filter -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <label for="sportFilter" class="form-label">
+                        Filter by Sport
+                    </label>
+                    <select id="sportFilter" class="form-select"
+                            [ngModel]="selectedSportId"
+                            (ngModelChange)="onSportChange($event)">
+                        <option [ngValue]="null">All Sports</option>
+                        <option *ngFor="let sport of sports" [ngValue]="sport.sportId">
+                            {{sport.name}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Filter -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <label for="dateFilter" class="form-label">
+                        Filter by Date
+                    </label>
+                    <div class="input-group">
+                        <input id="dateFilter"
+                               placeholder="yyyy-mm-dd"
+                               class="form-control"
+                               name="dp"
+                               [(ngModel)]="model"
+                               (ngModelChange)="onDateChange($event)"
+                               ngbDatepicker
+                               #d="ngbDatepicker" />
+                        <button class="btn btn-outline-secondary bi bi-calendar3" (click)="d.toggle()" type="button"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading sports events...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="alert alert-danger" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div class="flex-grow-1">{{error}}</div>
+            <button class="btn btn-outline-danger btn-sm" (click)="retry()">
+                <i class="bi bi-arrow-clockwise me-1"></i>Retry
+            </button>
+        </div>
+    </div>
+
+    <!-- No Events State -->
+    <div *ngIf="!loading && !error && filteredEvents.length === 0"
+         class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        No sports events found for the selected filters.
+        <button *ngIf="selectedSportId || selectedDate"
+                class="btn btn-link btn-sm text-info"
+                (click)="clearFilters()">
+            Clear filters
+        </button>
+    </div>
+
+    <!-- Events List -->
+    <div *ngIf="!loading && !error && filteredEvents.length > 0">
+        <!-- Active Filters -->
+        <div *ngIf="selectedSportId || selectedDate" class="mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-muted">Active filters:</span>
+                <div *ngIf="selectedSportId" class="badge bg-primary">
+                    Sport: {{getSelectedSportName()}}
+                    <button class="btn btn-link btn-sm text-white p-0 ms-2"
+                            (click)="clearSportFilter()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <div *ngIf="selectedDate" class="badge bg-primary">
+                    Date: {{selectedDate | date:'mediumDate'}}
+                    <button class="btn btn-link btn-sm text-white p-0 ms-2"
+                            (click)="clearDateFilter()">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <button *ngIf="selectedSportId || selectedDate"
+                        class="btn btn-link btn-sm text-primary"
+                        (click)="clearFilters()">
+                    Clear all
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div *ngFor="let event of filteredEvents" class="col-12 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <!-- Header with Competition, Sport, Stage -->
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-1">{{event.competition.name}}</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small">{{event.sport.name}}</span>
+                            <span class="badge rounded-pill bg-light text-primary px-3">
+                                {{event.stage.name}}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Teams and Score -->
+                        <div class="text-center mb-3">
+                            <div class="row align-items-center mb-2">
+                                <div class="col text-end">
+                                    <div class="fw-bold">{{event.homeTeam.name}}</div>
+                                    <small class="text-muted">{{event.homeTeam.abbreviation}}</small>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="bg-light rounded px-3 py-2">
+                                        <span class="h5 mb-0">
+                                            {{event.homeScore}} - {{event.awayScore}}
+                                        </span>
+                                        <div *ngIf="event.status.name === 'Completed'" class="small text-muted mt-1">
+                                            <ng-container *ngIf="event.winnerTeamId; else drawResult">
+                                                Winner: {{event.winnerTeamId === event.homeTeam.teamId ? event.homeTeam.name : event.awayTeam.name}}
+                                            </ng-container>
+                                            <ng-template #drawResult>
+                                                Draw
+                                            </ng-template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col text-start">
+                                    <div class="fw-bold">{{event.awayTeam.name}}</div>
+                                    <small class="text-muted">{{event.awayTeam.abbreviation}}</small>
+                                </div>
+                            </div>
+                            <!-- Status Badge -->
+                            <span class="badge rounded-pill px-3"
+                                  [ngClass]="{
+                                      'bg-secondary': event.status.name === 'Completed',
+                                      'bg-light text-dark border': event.status.name === 'Scheduled',
+                                      'bg-danger': event.status.name === 'Cancelled',
+                                      'bg-success': event.status.name === 'In Progress'
+                                    }">
+                                {{event.status.name}}
+                            </span>
+                        </div>
+                        <!-- Date and Time -->
+                        <div class="d-flex justify-content-between text-muted mb-2">
+                            <div>
+                                <i class="bi bi-calendar me-1"></i>
+                                {{event.date | date:'yyyy.MM.dd'}}
+                            </div>
+                            <div>
+                                <i class="bi bi-clock me-1"></i>
+                                {{formatTime(event.timeUTC)}}
+                            </div>
+                        </div>
+                        <!-- Venue -->
+                        <div class="text-muted mb-2">
+                            <i class="bi bi-geo-alt me-1"></i>
+                            {{event.venue.name}}
+                        </div>
+                        <!-- Season -->
+                        <div *ngIf="event.competition.season"
+                             class="mt-3 pt-3 border-top small text-muted">
+                            Season: {{event.competition.season.name}}
+                        </div>
+                        <!-- Duration -->
+                        <div class="mt-2 small text-muted">
+                            Duration: {{event.durationInMinutes}} minutes
+                        </div>
+                        <div class="mt-3 pt-3 border-top">
+                            <button class="btn btn-link p-0 text-decoration-none"
+                                    (click)="toggleEventDetails(event.eventId)">
+                                <i class="bi" [ngClass]="isEventExpanded(event.eventId) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                                {{ isEventExpanded(event.eventId) ? 'Hide' : 'Show' }} Event Details
+                            </button>
+
+                            <div *ngIf="isEventExpanded(event.eventId)" class="mt-3">
+                                <!-- Loading State -->
+                                <div *ngIf="loadingDetails[event.eventId]" class="text-center py-3">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                        <span class="visually-hidden">Loading details...</span>
+                                    </div>
+                                    <p class="text-muted mb-0 small">Loading event details...</p>
+                                </div>
+
+                                <!-- Details Content -->
+                                <div *ngIf="!loadingDetails[event.eventId]">
+                                    <ng-container *ngIf="eventDetails[event.eventId]?.length > 0; else noDetails">
+                                        <div *ngFor="let detail of eventDetails[event.eventId]"
+                                             class="mb-2 p-2 border-bottom">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <span class="badge bg-info me-2">{{detail.eventType.name}}</span>
+                                                    <span class="text-primary">{{detail.team.name}}</span>
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{detail.recordedAtUTC | date:'HH:mm:ss'}}
+                                                </small>
+                                            </div>
+                                            <p *ngIf="detail.description" class="mb-0 small text-muted mt-1">
+                                                {{detail.description}}
+                                            </p>
+                                        </div>
+                                    </ng-container>
+
+                                    <!-- No Details State -->
+                                    <ng-template #noDetails>
+                                        <div class="text-center text-muted py-3">
+                                            <i class="bi bi-info-circle me-2"></i>
+                                            No event details available
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
